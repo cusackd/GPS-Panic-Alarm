@@ -1,0 +1,10 @@
+/* Empty. Add your own CSS if you like */
+.bar-header { background-color:#3a6d94; }
+.nav-bar-block, .bar {
+  background-color: #3a6d94 !important;
+  color: white !important;
+}
+
+bar.bar-custom, bar.bar-custom .bar.bar-positive, .bar-custom .nav-bar-block ion-header-bar {
+  color: white;
+}

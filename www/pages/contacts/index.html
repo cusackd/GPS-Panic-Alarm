@@ -1,0 +1,36 @@
+<!-- Contacts Page -->
+<ion-view view-title="Contacts">
+  <ion-content ng-controller="AddContactsCtrl">
+
+    <div class="item item-divider">
+      List of Contacts
+    </div>
+
+    <ion-list show-delete="true">
+      <ion-item ng-repeat="contact in contactDetails">
+        <ion-delete-button class="ion-minus-circled" ng-click="removeContactClick($index)"></ion-delete-button>{{contact.name}} {{contact.number}}
+      </ion-item>
+    </ion-list>
+
+    <div class="item item-divider">
+    Add a new contact
+  </div>
+
+    <label class="item item-input">
+      <span class="input-label">Name</span>
+      <input type="text" ng-model="name">
+    </label>
+
+    <label class="item item-input">
+      <span class="input-label">Phone Number</span>
+      <input type="tel" ng-model="number">
+    </label>
+
+    <div style="padding: 10px;">
+      <button class="button button-full button-positive"  ng-click="addContactClick()">
+        Save New Emergency Contact
+      </button>
+    </div>
+
+  </ion-content>
+</ion-view>

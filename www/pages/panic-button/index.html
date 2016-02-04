@@ -1,0 +1,13 @@
+<!-- Panic Button Page -->
+<style media="screen">
+.panic { border-radius: 200px; border-style: solid; height: 350px; width: 350px; display: block; background-color: #F26E65; color: white; font-size: 53px; margin: 30px auto 0 auto;}
+
+</style>
+
+<ion-view view-title="Panic Button">
+  <ion-content ng-controller="PanicButtonCtrl" ng-init="init()">
+    <button class="panic" ng-hide="buttonActivate" ng-click="panicButtonClick()">Press Panic</button>
+    <button class="panic" ng-show="buttonActivate">Sending...</button>
+    <!-- <button ng-hide="hasContact" ng-click="addContacts()">Add Emergency Contacts Now</button> -->
+  </ion-content>
+</ion-view>
