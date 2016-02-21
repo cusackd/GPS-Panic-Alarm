@@ -4,10 +4,17 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'panicControllers', 'contactControllers'])
+angular.module('starter', ['ionic', 'starter.controllers', 'panicControllers', 'contactControllers', 'profileControllers', 'ngCordova'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $cordovaGoogleAnalytics) {
   $ionicPlatform.ready(function() {
+
+    document.addEventListener("deviceready", function () {
+        // $cordovaGoogleAnalytics.debugMode();
+        $cordovaGoogleAnalytics.startTrackerWithId('UA-65463621-3');
+        $cordovaGoogleAnalytics.trackView('App Start');
+        $cordovaGoogleAnalytics.trackEvent('App', 'Init', 'Start');
+    });
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -56,6 +63,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'panicControllers', '
     views: {
       'menuContent': {
         templateUrl: 'pages/help/index.html'
+      }
+    }
+  })
+
+  .state('app.profile', {
+    url: '/profile',
+    views: {
+      'menuContent': {
+        templateUrl: 'pages/profile/index.html',
+        controller: 'ProfileCtrl'
       }
     }
   })

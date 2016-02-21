@@ -1,7 +1,7 @@
 var contactControllers = angular.module('contactControllers', []);
 
 // Main panic button controller
-contactControllers.controller('AddContactsCtrl', ['$scope', function($scope){
+contactControllers.controller('AddContactsCtrl', ['$scope', '$cordovaGoogleAnalytics', function($scope, $cordovaGoogleAnalytics){
 
   // New Contacts Scope
   $scope.name = "";
@@ -9,6 +9,10 @@ contactControllers.controller('AddContactsCtrl', ['$scope', function($scope){
 
   // Set Empty Contacts Scope
   $scope.contactDetails = [];
+
+  $scope.init = function(){
+      $cordovaGoogleAnalytics.trackView('Contact Screen');
+  }
 
   $scope.removeContactClick = function(i){
     removeContact(i);

@@ -1,86 +1,109 @@
-var panicControllers = angular.module('panicControllers', []);
+var panicControllers = angular.module('panicControllers', [])
 
 // Main panic button controller
-panicControllers.controller('PanicButtonCtrl', ['$scope', '$state','$ionicLoading', function($scope, $state, $ionicLoading){
+.controller('PanicButtonCtrl', ['$scope', '$state','$ionicLoading', '$timeout', '$cordovaGoogleAnalytics', function($scope, $state, $ionicLoading, $timeout, $cordovaGoogleAnalytics){
 
-  $scope.contactDetails = [];
-  $scope.hasContact = true;
-  $scope.buttonActivate = false;
-  $scope.geo = {latitude: 0, longitude: 0};
-  $scope.name = "David";
+    $scope.contactDetails = [];
+    $scope.sending = false;
+    $scope.hasContact = true;
+    $scope.hasName = true;
+    $scope.geo = {latitude: 0, longitude: 0};
+    $scope.name = "";
 
-  // Run on Panic Button click
-  $scope.panicButtonClick = function(){
-    $scope.buttonActivate = true;
-    // alert($scope.buttonActivate);
-    console.log('Panic Button Pressed');
-    getLocalStorage();
-    smsSetup();
+    // Run on Panic Button click
+    $scope.panicButtonClick = function(){
 
-  }
+        $scope.sending = true;
 
-  finishedSendingAlarm = function(){
-    $ionicLoading.hide();
-  }
+        smsSetup(function(){
+            var that = this;
+            $timeout(function () {
+                $scope.sending = false;
+            }, 2000);
+        });
 
-  sendingPanicAlarm = function(){
-    $ionicLoading.show({
-      template: 'Sending Panic Alarm...'
-    });
-  }
-
-  $scope.init = function(){
-    getGeoLocation();
-    getLocalStorage();
-
-    if($scope.contactDetails.length < 1){
-      $scope.hasContact = false;
     }
 
-  }
+    $scope.init = function(){
 
-  $scope.addContacts = function(){
-    $state.go('app.contacts');
-  }
+        document.addEventListener("deviceready", function () {
+            $cordovaGoogleAnalytics.trackView('Panic Screen');
+        });
 
-  getGeoLocation = function(){
-    navigator.geolocation.getCurrentPosition(function(position){
-				$scope.geo = position.coords;
-    }, function(){
-      console.log('Nothing');
-    });
+        getGeoLocation();
 
-  }
+        getLocalStorage();
 
-  // Get localStorage
-  getLocalStorage = function(){
+        getName();
 
-    // Parse the contacts to JSON as they have been saved to localStorage as a string
-    var contacts = JSON.parse(localStorage.getItem('contacts'));
+        if($scope.contactDetails.length < 1){
+            $scope.hasContact = false;
+        }
+        // debugger
+        if($scope.name.length < 1){
+            console.log(12345);
+            $scope.hasName = false;
+        }
 
-    // Check if any values in local storage
-    if(contacts !== null){
-      // console.log(contacts);
-      // Push to scope
-      $scope.contactDetails.push.apply($scope.contactDetails, contacts);
     }
 
-  }
+    $scope.addContacts = function(){
+        $state.go('app.contacts');
+    }
 
-  smsSetup = function() {
-    console.log($scope.contactDetails);
-    angular.forEach($scope.contactDetails, function(value, key){
-      console.log(value);
-      sendSMS(value.number)
-    });
-    $scope.buttonActivate = false;
+    $scope.addName = function(){
+        $state.go('app.profile');
+    }
 
-  }
+    getName = function(){
+        $scope.name = localStorage.getItem('name');
+    }
 
-  sendSMS = function(number){
-        // alert('Sending SMS to ' + name);
+    getGeoLocation = function(){
+        navigator.geolocation.getCurrentPosition(function(position){
+            $scope.geo = position.coords;
+        }, function(){
+            console.log('Nothing');
+        });
+
+    }
+
+    // Get localStorage
+    getLocalStorage = function(){
+        console.log('Hello');
+
+        $scope.contactDetails = [];
+
+        // Parse the contacts to JSON as they have been saved to localStorage as a string
+        var contacts = JSON.parse(localStorage.getItem('contacts'));
+
+        // Check if any values in local storage
+        if(contacts !== null){
+            $scope.contactDetails = contacts;
+        }
+        console.log($scope.contactDetails);
+
+    }
+
+    smsSetup = function(success) {
+        console.log($scope.contactDetails);
+        navigator.geolocation.getCurrentPosition(function(position){
+            $scope.geo = position.coords;
+            angular.forEach($scope.contactDetails, function(value, key){
+                console.log(value);
+                sendSMS(value.number)
+            });
+            success(true);
+
+        }, function(){
+            console.log('Nothing');
+        });
+
+
+    }
+
+    sendSMS = function(number){
         var number = number;
-        // var message = 'Test Message';
         var message = $scope.name + " has pressed a mobile panic button. Please make contact immediately as their could be an emergency. Click for " + $scope.name + "'s location http://www.google.com/maps/?q=" + $scope.geo.latitude + "," + $scope.geo.longitude;
 
         //CONFIGURATION
@@ -88,13 +111,12 @@ panicControllers.controller('PanicButtonCtrl', ['$scope', '$state','$ionicLoadin
             replaceLineBreaks: false, // true to replace \n by a new line, false by default
             android: {
                 intent: ''  // send SMS with the native android SMS messaging
-                //intent: '' // send SMS without open any other app
             }
         };
 
         var success = function () { console.log('Message sent successfully'); };
         var error = function (e) { console.log('Message Failed:' + e); };
         sms.send(number, message, options, success, error);
-  }
+    }
 
 }])
